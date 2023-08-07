@@ -11,11 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-// import { useUploadThing } from "@/lib/uploadthing";
-// import { isBase64Image } from "@/lib/utils";
+import { useUploadThing } from "@/lib/uploadthing";
+import { isBase64Image } from "@/lib/utils";
 
 import { UserValidation } from "@/lib/validations/user";
-// import { updateUser } from "@/lib/actions/user.actions";
+import { updateUser } from "@/lib/actions/user.actions";
 
 import {
   Form,
@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/form";
 
 interface Props {
-  user?: {
+  user: {
     id: string;
     objectId: string;
     username: string;
@@ -39,7 +39,9 @@ interface Props {
 }
 
 const AccountProfile = ({ user, btnTitle }: Props) => {
-  const router = useRouter();
+  const { back, push } = useRouter();
+  const pathname = usePathname();
+  const { startUpload } = useUploadThing("media");
   const [files, setFiles] = useState<File[]>([]);
   const form = useForm({
     resolver: zodResolver(UserValidation),
@@ -54,29 +56,29 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
   const onSubmit = async (values: z.infer<typeof UserValidation>) => {
     const blob = values.profile_photo;
 
-    // const hasImageChanged = isBase64Image(blob);
-    // if (hasImageChanged) {
-    //   const imgRes = await startUpload(files);
+    const hasImageChanged = isBase64Image(blob);
+    if (hasImageChanged) {
+      const imgRes = await startUpload(files);
 
-    //   if (imgRes && imgRes[0].fileUrl) {
-    //     values.profile_photo = imgRes[0].fileUrl;
-    //   }
-    // }
+      if (imgRes && imgRes[0].fileUrl) {
+        values.profile_photo = imgRes[0].fileUrl;
+      }
+    }
 
-    // await updateUser({
-    //   name: values.name,
-    //   path: pathname,
-    //   username: values.username,
-    //   userId: user.id,
-    //   bio: values.bio,
-    //   image: values.profile_photo,
-    // });
+    await updateUser({
+      name: values.name,
+      path: pathname,
+      username: values.username,
+      userId: user.id,
+      bio: values.bio,
+      image: values.profile_photo,
+    });
 
-    // if (pathname === "/profile/edit") {
-    //   router.back();
-    // } else {
-    //   router.push("/");
-    // }
+    if (pathname === "/profile/edit") {
+      back();
+    } else {
+      push("/");
+    }
   };
 
   const handleImage = (
@@ -161,7 +163,7 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
                   {...field}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red-300" />
             </FormItem>
           )}
         />
@@ -181,7 +183,7 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
                   {...field}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red-300" />
             </FormItem>
           )}
         />
@@ -201,7 +203,7 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
                   {...field}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red-300" />
             </FormItem>
           )}
         />

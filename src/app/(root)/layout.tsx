@@ -7,6 +7,7 @@ import Topbar from "@/components/shared/top-bar";
 import LeftSidebar from "@/components/shared/left-sidebar";
 import RightSidebar from "@/components/shared/right-sidebar";
 import Bottombar from "@/components/shared/bottom-bar";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
     >
       <html lang="en">
         <body className={inter.className}>
+          <Toaster />
           <Topbar />
           <main className="flex flex-row">
             <LeftSidebar />
